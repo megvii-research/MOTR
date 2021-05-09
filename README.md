@@ -10,7 +10,7 @@ This repository is an official implementation of the paper [MOTR: End-to-End Mul
 <img src=./figs/motr.png/>
 </div>
 
-**Abstract.** The key challenge in multiple-object tracking (MOT) task is temporal modeling of the object under track. Existing tracking-by-detection methods adopt simple heuristics, such as spatial or appearance similarity. Such methods, in spite of their commonality, are overly simple and insufficient to model complex variations, such as tracking through occlusion. Inherently, existing methods lack the ability to learn temporal variations from data. In this paper, we present MOTR, the first fully end-to-end multiple-object tracking framework. It learns to model the long-range temporal variation of the objects. It performs temporal association implicitly and avoids previous explicit heuristics. Built on Transformer and DETR, MOTR introduces the concept of “track query”. Each track query models the entire track of an object. It is transferred and updated frame-by-frame to perform object detection and tracking, in a seamless manner. Temporal aggregation network combined with multi-frame training is proposed to model the long-range temporal relation. Experimental results show that MOTR achieves state-of-the-art performance. Code will be released.
+**Abstract.** The key challenge in multiple-object tracking (MOT) task is temporal modeling of the object under track. Existing tracking-by-detection methods adopt simple heuristics, such as spatial or appearance similarity. Such methods, in spite of their commonality, are overly simple and insufficient to model complex variations, such as tracking through occlusion. Inherently, existing methods lack the ability to learn temporal variations from data. In this paper, we present MOTR, the first fully end-to-end multiple-object tracking framework. It learns to model the long-range temporal variation of the objects. It performs temporal association implicitly and avoids previous explicit heuristics. Built on Transformer and DETR, MOTR introduces the concept of “track query”. Each track query models the entire track of an object. It is transferred and updated frame-by-frame to perform object detection and tracking, in a seamless manner. Temporal aggregation network combined with multi-frame training is proposed to model the long-range temporal relation. Experimental results show that MOTR achieves state-of-the-art performance.
 
 
 <!-- ## Citing Deformable DETR
@@ -26,20 +26,21 @@ If you find Deformable DETR useful in your research, please consider citing:
 
 ## Main Results
 
-|  **Method**  |  **Dataset**  |  **MOTA**  |  **IDF1**  |  **IDS**  |  **URL**  |  
-|:------:|:------:|:------:|:------:|:------:|:------:|  
-| MOTR | MOT16 | 65.8 | 67.1 | 547 | [model](https://drive.google.com/file/d/1xqRRHvsHZ22icdWwGZbzonNa440Aqw_9/view?usp=sharing) |
-| MOTR | MOT17 | 66.5 | 67.0 | 1884 | [model](https://drive.google.com/file/d/1xqRRHvsHZ22icdWwGZbzonNa440Aqw_9/view?usp=sharing) |
+|  **Method**  |  **Dataset**  |  **Train Data**  |  **MOTA**  |  **IDF1**  |  **IDS**  |  **URL**  |  
+|:------:|:------:|:------:|:------:|:------:|:------:|:------:|  
+| MOTR | MOT16 | MOT17+CrowdHuamn Val | 65.8 | 67.1 | 547 | [model](https://drive.google.com/file/d/1xqRRHvsHZ22icdWwGZbzonNa440Aqw_9/view?usp=sharing) |
+| MOTR | MOT17 | MOT17+CrowdHuamn Val | 66.5 | 67.0 | 1884 | [model](https://drive.google.com/file/d/1xqRRHvsHZ22icdWwGZbzonNa440Aqw_9/view?usp=sharing) |
 
 *Note:*
 
-1. All models of MOTR are trained on NVIDIA Tesla V100 GPU.
-2. The original implementation is based on our internal codebase. There are slight differences in the final accuracy and running time due to the plenty details in platform switch.
+1. All models of MOTR are trained on 8 NVIDIA Tesla V100 GPU with ResNet50.
+2. All models of MOTR are trained with ResNet50.
+3. We use the models pre-trained on COCO dataset.
 
 
 ## Installation
 
-The codebases are built on top of [Deformable DETR](https://github.com/fundamentalvision/Deformable-DETR).
+The codebase are built on top of [Deformable DETR](https://github.com/fundamentalvision/Deformable-DETR).
 
 ### Requirements
 
@@ -68,14 +69,11 @@ The codebases are built on top of [Deformable DETR](https://github.com/fundament
     pip install -r requirements.txt
     ```
 
-### Compiling CUDA operators
-
-build MultiScaleDeformableAttention
-
-```bash
-cd ./models/ops
-sh ./make.sh
-```
+* Build MultiScaleDeformableAttention
+    ```bash
+    cd ./models/ops
+    sh ./make.sh
+    ```
 
 ## Usage
 
