@@ -33,7 +33,7 @@ If you find Deformable DETR useful in your research, please consider citing:
 
 *Note:*
 
-1. All models of MOTR are trained on 8 NVIDIA Tesla V100 GPU with ResNet50.
+1. All models of MOTR are trained on 8 NVIDIA Tesla V100 GPUs.
 2. All models of MOTR are trained with ResNet50.
 3. We use the models pre-trained on COCO dataset.
 
