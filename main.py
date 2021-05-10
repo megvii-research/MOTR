@@ -97,7 +97,6 @@ def get_args_parser():
     parser.add_argument('--cj', action='store_true')
     parser.add_argument('--extra_track_attn', action='store_true')
     parser.add_argument('--loss_normalizer', action='store_true')
-    parser.add_argument('--crowdhuman_downsample_ratio', default=2, type=int)
 
     # * Segmentation
     parser.add_argument('--masks', action='store_true',
