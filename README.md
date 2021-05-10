@@ -17,8 +17,8 @@ This repository is an official implementation of the paper [MOTR: End-to-End Mul
 
 |  **Method**  |  **Dataset**  |  **Train Data**  |  **MOTA**  |  **IDF1**  |  **IDS**  |  **URL**  |  
 |:------:|:------:|:------:|:------:|:------:|:------:|:------:|  
-| MOTR | MOT16 | MOT17+CrowdHuamn Val | 65.8 | 67.1 | 547 | [model](https://drive.google.com/file/d/1xqRRHvsHZ22icdWwGZbzonNa440Aqw_9/view?usp=sharing) |
-| MOTR | MOT17 | MOT17+CrowdHuamn Val | 66.5 | 67.0 | 1884 | [model](https://drive.google.com/file/d/1xqRRHvsHZ22icdWwGZbzonNa440Aqw_9/view?usp=sharing) |
+| MOTR | MOT16 | MOT17+CrowdHuman Val | 65.8 | 67.1 | 547 | [model](https://drive.google.com/file/d/1xqRRHvsHZ22icdWwGZbzonNa440Aqw_9/view?usp=sharing) |
+| MOTR | MOT17 | MOT17+CrowdHuman Val | 66.5 | 67.0 | 1884 | [model](https://drive.google.com/file/d/1xqRRHvsHZ22icdWwGZbzonNa440Aqw_9/view?usp=sharing) |
 
 *Note:*
 
