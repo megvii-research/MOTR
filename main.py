@@ -108,8 +108,6 @@ def get_args_parser():
 
     # * Matcher
     parser.add_argument('--mix_match', action='store_true',)
-    parser.add_argument('--atss_topk', default=9, type=int)
-    parser.add_argument('--minus_std', action='store_true',)
     parser.add_argument('--set_cost_class', default=2, type=float,
                         help="Class coefficient in the matching cost")
     parser.add_argument('--set_cost_bbox', default=5, type=float,
