@@ -93,7 +93,6 @@ def get_args_parser():
     parser.add_argument('--enc_n_points', default=4, type=int)
     parser.add_argument('--decoder_cross_self', default=False, action='store_true')
     parser.add_argument('--sigmoid_attn', default=False, action='store_true')
-    parser.add_argument('--dcn', action='store_true')
     parser.add_argument('--crop', action='store_true')
     parser.add_argument('--cj', action='store_true')
     parser.add_argument('--extra_track_attn', action='store_true')

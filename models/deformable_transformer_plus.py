@@ -336,10 +336,10 @@ class DeformableTransformerDecoderLayer(nn.Module):
     def _forward_track_attn(self, tgt, query_pos):
         q = k = self.with_pos_embed(tgt, query_pos)
         if q.shape[1] > 300:
-            tgt2 = self.update_attn(q[:,300:].transpose(0,1),
-                                    k[:,300:].transpose(0,1),
-                                    tgt[:,300:].transpose(0,1))[0].transpose(0,1)
-            tgt = torch.cat([tgt[:,:300],self.norm4(tgt[:,300:]+self.dropout5(tgt2))], dim=1)
+            tgt2 = self.update_attn(q[:, 300:].transpose(0, 1),
+                                    k[:, 300:].transpose(0, 1),
+                                    tgt[:, 300:].transpose(0, 1))[0].transpose(0, 1)
+            tgt = torch.cat([tgt[:, :300],self.norm4(tgt[:, 300:]+self.dropout5(tgt2))], dim=1)
         return tgt
 
     def _forward_self_cross(self, tgt, query_pos, reference_points, src, src_spatial_shapes, level_start_index,
