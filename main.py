@@ -97,7 +97,6 @@ def get_args_parser():
     parser.add_argument('--cj', action='store_true')
     parser.add_argument('--extra_track_attn', action='store_true')
     parser.add_argument('--loss_normalizer', action='store_true')
-    parser.add_argument('--crowdhuman_downsample_ratio', default=2, type=int)
 
     # * Segmentation
     parser.add_argument('--masks', action='store_true',
@@ -109,8 +108,6 @@ def get_args_parser():
 
     # * Matcher
     parser.add_argument('--mix_match', action='store_true',)
-    parser.add_argument('--atss_topk', default=9, type=int)
-    parser.add_argument('--minus_std', action='store_true',)
     parser.add_argument('--set_cost_class', default=2, type=float,
                         help="Class coefficient in the matching cost")
     parser.add_argument('--set_cost_bbox', default=5, type=float,
