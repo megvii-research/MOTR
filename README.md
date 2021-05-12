@@ -23,8 +23,9 @@ This repository is an official implementation of the paper [MOTR: End-to-End Mul
 *Note:*
 
 1. All models of MOTR are trained on 8 NVIDIA Tesla V100 GPUs.
-2. All models of MOTR are trained with ResNet50.
-3. We use the models pre-trained on COCO dataset.
+2. The training time is about 2.5 days for 200 epochs;
+3. The inference speed is about 7.5 FPS for resolution 1536x800;
+4. All models of MOTR are trained with ResNet50 with pre-trained weights on COCO dataset.
 
 
 ## Installation
@@ -103,6 +104,12 @@ You can download the pretrained model of MOTR (the link is in "Main Results" ses
 
 ```bash 
 sh configs/r50_motr_eval.sh
+
+```
+
+For visual in demo video, you can enable 'vis=True' in eval.py like:
+```bash 
+det.detect(vis=True)
 
 ```
 
