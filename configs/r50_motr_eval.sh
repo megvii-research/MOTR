@@ -30,4 +30,4 @@ python3 eval.py \
     --extra_track_attn \
     --data_txt_path_train ./datasets/data_path/joint.train \
     --data_txt_path_val ./datasets/data_path/mot17.train \
-    --resume ${EXP_DIR}/motr_final.pth \
+    --resume ${EXP_DIR}/motr_final.pth
