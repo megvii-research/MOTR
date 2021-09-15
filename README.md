@@ -18,15 +18,15 @@ This repository is an official implementation of the paper [MOTR: End-to-End Mul
 <img src=./figs/motr.png/>
 </div>
 
-**Abstract.** The key challenge in multiple-object tracking (MOT) task is temporal modeling of the object under track. Existing tracking-by-detection methods adopt simple heuristics, such as spatial or appearance similarity. Such methods, in spite of their commonality, are overly simple and insufficient to model complex variations, such as tracking through occlusion. Inherently, existing methods lack the ability to learn temporal variations from data. In this paper, we present MOTR, the first fully end-to-end multiple-object tracking framework. It learns to model the long-range temporal variation of the objects. It performs temporal association implicitly and avoids previous explicit heuristics. Built on Transformer and DETR, MOTR introduces the concept of “track query”. Each track query models the entire track of an object. It is transferred and updated frame-by-frame to perform object detection and tracking, in a seamless manner. Temporal aggregation network combined with multi-frame training is proposed to model the long-range temporal relation. Experimental results show that MOTR achieves state-of-the-art performance.
+**Abstract.** The key challenge in multiple-object tracking task is temporal modeling of the object under track. Existing tracking-by-detection methods adopt simple heuristics, such as spatial or appearance similarity. Such methods, in spite of their commonality, are overly simple and lack the ability to learn temporal variations from data in an end-to-end manner.In this paper, we present MOTR, a fully end-to-end multiple-object tracking framework. It learns to model the long-range temporal variation of the objects. It performs temporal association implicitly and avoids previous explicit heuristics. Built upon DETR, MOTR introduces the concept of "track query". Each track query models the entire track of an object. It is transferred and updated frame-by-frame to perform iterative predictions in a seamless manner. Tracklet-aware label assignment is proposed for one-to-one assignment between track queries and object tracks. Temporal aggregation network together with collective average loss is further proposed to enhance the long-range temporal relation. Experimental results show that MOTR achieves competitive performance and can serve as a strong Transformer-based baseline for future research.
 
 
 ## Main Results
 
 |  **Method**  |  **Dataset**  |  **Train Data**  |  **MOTA**  |  **IDF1**  |  **IDS**  |  **URL**  |  
 |:------:|:------:|:------:|:------:|:------:|:------:|:------:|  
-| MOTR | MOT16 | MOT17+CrowdHuman Val | 65.8 | 67.1 | 547 | [model](https://drive.google.com/file/d/1xqRRHvsHZ22icdWwGZbzonNa440Aqw_9/view?usp=sharing) |
-| MOTR | MOT17 | MOT17+CrowdHuman Val | 66.5 | 67.0 | 1884 | [model](https://drive.google.com/file/d/1xqRRHvsHZ22icdWwGZbzonNa440Aqw_9/view?usp=sharing) |
+| MOTR | MOT16 | MOT17+CrowdHuman Val | 66.8 | 67.0 | 586 | [model](https://drive.google.com/file/d/1diXBvAuAKPcKxWHlubcvGgh6g8tGlaOZ/view?usp=sharing) |
+| MOTR | MOT17 | MOT17+CrowdHuman Val | 67.4 | 67.0 | 1992 | [model](https://drive.google.com/file/d/1diXBvAuAKPcKxWHlubcvGgh6g8tGlaOZ/view?usp=sharing) |
 
 *Note:*
 
@@ -128,6 +128,38 @@ You can download the pretrained model of MOTR (the link is in "Main Results" ses
 ```bash
 sh configs/r50_motr_submit.sh
 
+```
+
+#### Test on Video Demo
+
+We provide a demo interface which allows for a quick processing of a given video.
+
+```bash
+EXP_DIR=exps/e2e_motr_r50_joint
+python3 demo.py \
+    --meta_arch motr \
+    --dataset_file e2e_joint \
+    --epoch 200 \
+    --with_box_refine \
+    --lr_drop 100 \
+    --lr 2e-4 \
+    --lr_backbone 2e-5 \
+    --pretrained ${EXP_DIR}/motr_final.pth \
+    --output_dir ${EXP_DIR} \
+    --batch_size 1 \
+    --sample_mode 'random_interval' \
+    --sample_interval 10 \
+    --sampler_steps 50 90 120 \
+    --sampler_lengths 2 3 4 5 \
+    --update_query_pos \
+    --merger_dropout 0 \
+    --dropout 0 \
+    --random_drop 0.1 \
+    --fp_ratio 0.3 \
+    --query_interaction_layer 'QIM' \
+    --extra_track_attn \
+    --resume ${EXP_DIR}/motr_final.pth \
+    --input_video figs/demo.avi
 ```
 
 ## Citing MOTR

@@ -147,6 +147,7 @@ def get_args_parser():
 
     # end-to-end mot settings.
     parser.add_argument('--mot_path', default='/data/Dataset/mot', type=str)
+    parser.add_argument('--input_video', default='figs/demo.mp4', type=str)
     parser.add_argument('--data_txt_path_train',
                         default='./datasets/data_path/detmot17.train', type=str,
                         help="path to dataset txt split")
@@ -168,7 +169,7 @@ def get_args_parser():
     parser.add_argument('--exp_name', default='submit', type=str)
     parser.add_argument('--memory_bank_score_thresh', type=float, default=0.)
     parser.add_argument('--memory_bank_len', type=int, default=4)
-    parser.add_argument('--memory_bank_type', type=str, default='MemoryBank')
+    parser.add_argument('--memory_bank_type', type=str, default=None)
     parser.add_argument('--memory_bank_with_self_attn', action='store_true', default=False)
     return parser
 

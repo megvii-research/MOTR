@@ -71,24 +71,25 @@ COLORS_10 = [(144, 238, 144), (178, 34, 34), (221, 160, 221), (0, 255, 0), (0, 1
 def plot_one_box(x, img, color=None, label=None, score=None, line_thickness=None):
     # Plots one bounding box on image img
 
-    tl = line_thickness or round(
-        0.002 * max(img.shape[0:2])) + 1  # line thickness
+    # tl = line_thickness or round(
+    #     0.002 * max(img.shape[0:2])) + 1  # line thickness
+    tl = 2
     color = color or [random.randint(0, 255) for _ in range(3)]
     c1, c2 = (int(x[0]), int(x[1])), (int(x[2]), int(x[3]))
     cv2.rectangle(img, c1, c2, color, thickness=tl)
-    # if label:
-    #     tf = max(tl - 1, 1)  # font thickness
-    #     t_size = cv2.getTextSize(label, 0, fontScale=tl / 3, thickness=tf)[0]
-    #     c2 = c1[0] + t_size[0], c1[1] - t_size[1] - 3
-    #     cv2.rectangle(img, c1, c2, color, -1)  # filled
-    #     cv2.putText(img,
-    #                 label, (c1[0], c1[1] - 2),
-    #                 0,
-    #                 tl / 3, [225, 255, 255],
-    #                 thickness=tf,
-    #                 lineType=cv2.LINE_AA)
-    #     if score is not None:
-    #         cv2.putText(img, score, (c1[0], c1[1] + 30), 0, tl / 3, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
+    if label:
+        tf = max(tl - 1, 1)  # font thickness
+        t_size = cv2.getTextSize(label, 0, fontScale=tl / 3, thickness=tf)[0]
+        c2 = c1[0] + t_size[0], c1[1] - t_size[1] - 3
+        cv2.rectangle(img, c1, c2, color, -1)  # filled
+        cv2.putText(img,
+                    label, (c1[0], c1[1] - 2),
+                    0,
+                    tl / 3, [225, 255, 255],
+                    thickness=tf,
+                    lineType=cv2.LINE_AA)
+        if score is not None:
+            cv2.putText(img, score, (c1[0], c1[1] + 30), 0, tl / 3, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
     return img
 
 
@@ -291,7 +292,6 @@ class Detector(object):
         if os.path.exists(os.path.join(self.predict_path, 'gt.txt')):
             os.remove(os.path.join(self.predict_path, 'gt.txt'))
 
-    @staticmethod
     def load_img_from_file(self, f_path):
         label_path = f_path.replace('images', 'labels_with_ids').replace('.png', '.txt').replace('.jpg', '.txt')
         cur_img = cv2.imread(f_path)
@@ -373,7 +373,6 @@ class Detector(object):
             track_instances = res['track_instances']
             max_id = max(max_id, track_instances.obj_idxes.max().item())
 
-            print("ref points.shape={}".format(res['ref_pts'].shape))
             all_ref_pts = tensor_to_numpy(res['ref_pts'][0, :, :2])
             dt_instances = track_instances.to(torch.device('cpu'))
 
@@ -419,7 +418,7 @@ if __name__ == '__main__':
     for seq_num in seq_nums:
         print("solve {}".format(seq_num))
         det = Detector(args, model=detr, seq_num=seq_num)
-        det.detect(vis=False)
+        det.detect(vis=True)
         accs.append(det.eval_seq())
         seqs.append(seq_num)
 
