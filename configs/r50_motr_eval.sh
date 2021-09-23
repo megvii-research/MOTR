@@ -58,7 +58,7 @@
 #     --dropout 0 \
 #     --random_drop 0.1 \
 #     --fp_ratio 0.3 \
-#     --track_embedding_layer 'AttentionMergerV4' \
+#     --query_interaction_layer 'QIM' \
 #     --extra_track_attn \
 #     --data_txt_path_train ./datasets/data_path/bdd100k.train \
 #     --data_txt_path_val ./datasets/data_path/bdd100k.val \
