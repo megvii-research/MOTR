@@ -20,6 +20,8 @@ This repository is an official implementation of the paper [MOTR: End-to-End Mul
 
 **Abstract.** The key challenge in multiple-object tracking task is temporal modeling of the object under track. Existing tracking-by-detection methods adopt simple heuristics, such as spatial or appearance similarity. Such methods, in spite of their commonality, are overly simple and lack the ability to learn temporal variations from data in an end-to-end manner.In this paper, we present MOTR, a fully end-to-end multiple-object tracking framework. It learns to model the long-range temporal variation of the objects. It performs temporal association implicitly and avoids previous explicit heuristics. Built upon DETR, MOTR introduces the concept of "track query". Each track query models the entire track of an object. It is transferred and updated frame-by-frame to perform iterative predictions in a seamless manner. Tracklet-aware label assignment is proposed for one-to-one assignment between track queries and object tracks. Temporal aggregation network together with collective average loss is further proposed to enhance the long-range temporal relation. Experimental results show that MOTR achieves competitive performance and can serve as a strong Transformer-based baseline for future research.
 
+## Updates
+- (23/09/2021) Report BDD100K results and release corresponding codes. 
 
 ## Main Results
 
@@ -27,6 +29,10 @@ This repository is an official implementation of the paper [MOTR: End-to-End Mul
 |:------:|:------:|:------:|:------:|:------:|:------:|:------:|  
 | MOTR | MOT16 | MOT17+CrowdHuman Val | 66.8 | 67.0 | 586 | [model](https://drive.google.com/file/d/1diXBvAuAKPcKxWHlubcvGgh6g8tGlaOZ/view?usp=sharing) |
 | MOTR | MOT17 | MOT17+CrowdHuman Val | 67.4 | 67.0 | 1992 | [model](https://drive.google.com/file/d/1diXBvAuAKPcKxWHlubcvGgh6g8tGlaOZ/view?usp=sharing) |
+
+|  **Method**  |  **Dataset**  |  **Train Data**  |  **MOTA**  |  **IDF1**  |  **IDS**  |  **URL**  |  
+|:------:|:------:|:------:|:------:|:------:|:------:|:------:|  
+| MOTR | BDD100K |  BDD100K | 32.0 | 43.5 | 3493 | [model](https://drive.google.com/file/d/13fsTj9e6Hk7qVcybWi1X5KbZEsFCHa6e/view?usp=sharing) |
 
 *Note:*
 
@@ -92,6 +98,15 @@ Please download [MOT17 dataset](https://motchallenge.net/) and [CrowdHuman datas
 ├── MOT17
 │   ├── images
 │   ├── labels_with_ids
+├── bdd100k
+│   ├── images
+│       ├── track
+│           ├── train
+│           ├── val
+│   ├── labels
+│       ├── track
+│           ├── train
+│           ├── val
 
 ```
 

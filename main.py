@@ -97,6 +97,9 @@ def get_args_parser():
     parser.add_argument('--cj', action='store_true')
     parser.add_argument('--extra_track_attn', action='store_true')
     parser.add_argument('--loss_normalizer', action='store_true')
+    parser.add_argument('--max_size', default=1333, type=int)
+    parser.add_argument('--val_width', default=800, type=int)
+    parser.add_argument('--filter_ignore', action='store_true')
 
     # * Segmentation
     parser.add_argument('--masks', action='store_true',
@@ -154,6 +157,7 @@ def get_args_parser():
     parser.add_argument('--data_txt_path_val',
                         default='./datasets/data_path/detmot17.train', type=str,
                         help="path to dataset txt split")
+    parser.add_argument('--img_path', default='data/valid/JPEGImages/')
 
     parser.add_argument('--query_interaction_layer', default='QIM', type=str,
                         help="")
@@ -213,7 +217,7 @@ def main(args):
 
     batch_sampler_train = torch.utils.data.BatchSampler(
         sampler_train, args.batch_size, drop_last=True)
-    if args.dataset_file in ['e2e_mot', 'mot', 'ori_mot', 'e2e_static_mot', 'e2e_joint']:
+    if args.dataset_file in ['e2e_mot', 'mot', 'ori_mot', 'e2e_static_mot', 'e2e_joint', 'bdd100k_mot']:
         collate_fn = utils.mot_collate_fn
     else:
         collate_fn = utils.collate_fn
@@ -224,7 +228,6 @@ def main(args):
                                  drop_last=False, collate_fn=collate_fn, num_workers=args.num_workers,
                                  pin_memory=True)
 
-    # lr_backbone_names = ["backbone.0", "backbone.neck", "input_proj", "transformer.encoder"]
     def match_name_keywords(n, name_keywords):
         out = False
         for b in name_keywords:
@@ -232,9 +235,6 @@ def main(args):
                 out = True
                 break
         return out
-
-    # for n, p in model_without_ddp.named_parameters():
-    #     print(n)
 
     param_dicts = [
         {
@@ -308,11 +308,6 @@ def main(args):
                 lr_scheduler.base_lrs = list(map(lambda group: group['initial_lr'], optimizer.param_groups))
             lr_scheduler.step(lr_scheduler.last_epoch)
             args.start_epoch = checkpoint['epoch'] + 1
-        # check the resumed model
-        # if not args.eval:
-        #     test_stats, coco_evaluator = evaluate(
-        #         model, criterion, postprocessors, data_loader_val, base_ds, device, args.output_dir
-        #     )
     
     if args.eval:
         test_stats, coco_evaluator = evaluate(model, criterion, postprocessors,
@@ -325,7 +320,7 @@ def main(args):
     start_time = time.time()
 
     train_func = train_one_epoch
-    if args.dataset_file in ['e2e_mot', 'mot', 'ori_mot', 'e2e_static_mot', 'e2e_joint']:
+    if args.dataset_file in ['e2e_mot', 'mot', 'ori_mot', 'e2e_static_mot', 'e2e_joint', 'bdd100k_mot']:
         train_func = train_one_epoch_mot
         dataset_train.set_epoch(args.start_epoch)
         dataset_val.set_epoch(args.start_epoch)
@@ -348,16 +343,8 @@ def main(args):
                     'epoch': epoch,
                     'args': args,
                 }, checkpoint_path)
-        # if args.dataset_file in ['e2e_mot', 'mot', 'ori_mot', 'e2e_static_mot', 'e2e_joint']:
-        #     detmotdet_evaluate(model, data_loader_val, device)
-        #     log_stats = {**{f'train_{k}': v for k, v in train_stats.items()},
-        #                  'epoch': epoch,
-        #                  'n_parameters': n_parameters}
-
-        #     if args.output_dir and utils.is_main_process():
-        #         with (output_dir / "log.txt").open("a") as f:
-        #             f.write(json.dumps(log_stats) + "\n")
-        if args.dataset_file != 'mot' and args.dataset_file != 'ori_mot' and args.dataset_file != 'e2e_mot' and args.dataset_file != 'e2e_static_mot' and args.dataset_file != 'e2e_joint':
+        
+        if args.dataset_file not in ['e2e_mot', 'mot', 'ori_mot', 'e2e_static_mot', 'e2e_joint', 'bdd100k_mot']
             test_stats, coco_evaluator = evaluate(
                 model, criterion, postprocessors, data_loader_val, base_ds, device, args.output_dir
             )
@@ -381,7 +368,7 @@ def main(args):
                         for name in filenames:
                             torch.save(coco_evaluator.coco_eval["bbox"].eval,
                                        output_dir / "eval" / name)
-        if args.dataset_file in ['e2e_mot', 'mot', 'ori_mot', 'e2e_static_mot', 'e2e_joint']:
+        if args.dataset_file in ['e2e_mot', 'mot', 'ori_mot', 'e2e_static_mot', 'e2e_joint', 'bdd100k_mot']:
             dataset_train.step_epoch()
             dataset_val.step_epoch()
     total_time = time.time() - start_time
