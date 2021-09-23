@@ -87,7 +87,7 @@ The codebase is built on top of [Deformable DETR](https://github.com/fundamental
 
 ### Dataset preparation
 
-Please download [MOT17 dataset](https://motchallenge.net/) and [CrowdHuman dataset](https://www.crowdhuman.org/) and organize them like [FairMOT](https://github.com/ifzhang/FairMOT) as following:
+1. Please download [MOT17 dataset](https://motchallenge.net/) and [CrowdHuman dataset](https://www.crowdhuman.org/) and organize them like [FairMOT](https://github.com/ifzhang/FairMOT) as following:
 
 ```
 .
@@ -112,6 +112,15 @@ Please download [MOT17 dataset](https://motchallenge.net/) and [CrowdHuman datas
 │           ├── train
 │           ├── val
 
+```
+
+2. For BDD100K dataset, you can use the following script to generate txt file:
+
+
+```bash 
+cd datasets/data_path
+python3 generate_bdd100k_mot.py
+cd ../../
 ```
 
 ### Training and Evaluation
@@ -148,10 +157,25 @@ You can download the pretrained model of MOTR (the link is in "Main Results" ses
 sh configs/r50_motr_submit.sh
 
 ```
+#### Evaluation on BDD100K
+
+For BDD100K dataset, we choose 0.6/0.6/0.6 thresh combination.
+
+1. change https://github.com/megvii-model/MOTR/blob/main/models/motr.py#L304 as:
+
+```bash
+score_thresh=0.7, filter_score_thresh=0.6
+```
+
+2. run this commands:
+
+```bash
+sh configs/r50_motr_eval.sh
+```
 
 #### Test on Video Demo
 
-We provide a demo interface which allows for a quick processing of a given video.
+We also provide a demo interface which allows for a quick processing of a given video.
 
 ```bash
 EXP_DIR=exps/e2e_motr_r50_joint
