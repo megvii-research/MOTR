@@ -210,7 +210,7 @@ If you find MOTR useful in your research, please consider citing:
 ```bibtex
 @article{zeng2021motr,
   title={MOTR: End-to-End Multiple-Object Tracking with TRansformer},
-  author={Zeng, Fangao and Dong, Bin and Wang, Tiancai and Chen, Cheng and Zhang, Xiangyu and Wei, Yichen},
+  author={Zeng, Fangao and Dong, Bin and Wang, Tiancai and Zhang, Xiangyu and Wei, Yichen},
   journal={arXiv preprint arXiv:2105.03247},
   year={2021}
 }
