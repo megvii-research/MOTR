@@ -117,6 +117,25 @@ def draw_points(img: np.ndarray, points: np.ndarray, color=(255, 255, 255)) -> n
 def tensor_to_numpy(tensor: torch.Tensor) -> np.ndarray:
     return tensor.detach().cpu().numpy()
 
+class Track(object):
+    track_cnt = 0
+
+    def __init__(self, box):
+        self.box = box
+        self.time_since_update = 0
+        self.id = Track.track_cnt
+        Track.track_cnt += 1
+        self.miss = 0
+
+    def miss_one_frame(self):
+        self.miss += 1
+
+    def clear_miss(self):
+        self.miss = 0
+
+    def update(self, box):
+        self.box = box
+        self.clear_miss()
 
 class MOTR(object):
     def __init__(self, max_age=1, min_hits=3, iou_threshold=0.3):
