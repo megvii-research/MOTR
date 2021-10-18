@@ -621,7 +621,6 @@ def build(args):
         'e2e_mot': 1,
         'e2e_joint': 1,
         'e2e_static_mot': 1,
-        'bdd100k_mot': 8
     }
     assert args.dataset_file in dataset_to_num_classes
     num_classes = dataset_to_num_classes[args.dataset_file]
