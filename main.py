@@ -344,7 +344,7 @@ def main(args):
                     'args': args,
                 }, checkpoint_path)
         
-        if args.dataset_file not in ['e2e_mot', 'mot', 'ori_mot', 'e2e_static_mot', 'e2e_joint', 'bdd100k_mot']
+        if args.dataset_file not in ['e2e_mot', 'mot', 'ori_mot', 'e2e_static_mot', 'e2e_joint', 'bdd100k_mot']:
             test_stats, coco_evaluator = evaluate(
                 model, criterion, postprocessors, data_loader_val, base_ds, device, args.output_dir
             )
