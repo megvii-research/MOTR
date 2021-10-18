@@ -159,19 +159,8 @@ sh configs/r50_motr_submit.sh
 ```
 #### Evaluation on BDD100K
 
-For BDD100K dataset, we choose 0.6/0.6/0.6 thresh combination.
+For BDD100K dataset, please refer [motr_bdd100k](https://github.com/megvii-model/MOTR/tree/motr_bdd100k). 
 
-1. change https://github.com/megvii-model/MOTR/blob/main/models/motr.py#L304 into:
-
-```bash
-score_thresh=0.6, filter_score_thresh=0.6
-```
-
-2. run this commands:
-
-```bash
-sh configs/r50_motr_eval.sh
-```
 
 #### Test on Video Demo
 
