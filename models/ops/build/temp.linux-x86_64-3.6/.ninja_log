@@ -1,0 +1,4 @@
+# ninja log v5
+1	6803	1619335014478582338	/data/dongbin/projects/e2e_motr_vis/models/ops/build/temp.linux-x86_64-3.6/data/dongbin/projects/e2e_motr_vis/models/ops/src/cpu/ms_deform_attn_cpu.o	b4846ea6d513f943
+1	16265	1619335023926852480	/data/dongbin/projects/e2e_motr_vis/models/ops/build/temp.linux-x86_64-3.6/data/dongbin/projects/e2e_motr_vis/models/ops/src/cuda/ms_deform_attn_cuda.o	6e7a123b4de5287e
+0	21089	1619335028740367127	/data/dongbin/projects/e2e_motr_vis/models/ops/build/temp.linux-x86_64-3.6/data/dongbin/projects/e2e_motr_vis/models/ops/src/vision.o	74e2b310c9111982
