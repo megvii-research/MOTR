@@ -1,53 +1,54 @@
-# MOTR
+# MOTR: End-to-End Multiple-Object Tracking with TRansformer
 
-<!-- By [Xizhou Zhu](https://scholar.google.com/citations?user=02RXI00AAAAJ),  [Weijie Su](https://www.weijiesu.com/),  [Lewei Lu](https://www.linkedin.com/in/lewei-lu-94015977/), [Bin Li](http://staff.ustc.edu.cn/~binli/), [Xiaogang Wang](http://www.ee.cuhk.edu.hk/~xgwang/), [Jifeng Dai](https://jifengdai.org/). -->
 
-<!-- This repository is an official implementation of the paper [Deformable DETR: Deformable Transformers for End-to-End Object Detection](https://arxiv.org/abs/2010.04159). -->
+</div>
 
-This repository is an official implementation of the paper [MOTR: End-to-End Multiple-Object Tracking with TRansformer].
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/motr-end-to-end-multiple-object-tracking-with/multi-object-tracking-on-mot17)](https://paperswithcode.com/sota/multi-object-tracking-on-mot17?p=motr-end-to-end-multiple-object-tracking-with)
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/motr-end-to-end-multiple-object-tracking-with/multi-object-tracking-on-mot16)](https://paperswithcode.com/sota/multi-object-tracking-on-mot16?p=motr-end-to-end-multiple-object-tracking-with)
+
+</div>
+
+This repository is an official implementation of the paper [MOTR: End-to-End Multiple-Object Tracking with TRansformer](https://arxiv.org/pdf/2105.03247.pdf).
 
 ## Introduction
 
 **TL; DR.** MOTR is a fully end-to-end multiple-object tracking framework based on Transformer. It directly outputs the tracks within the video sequences without any association procedures.
 
-<!-- ![motr](./figs/motr.png) -->
 <div style="align: center">
 <img src=./figs/motr.png/>
 </div>
 
-**Abstract.** The key challenge in multiple-object tracking (MOT) task is temporal modeling of the object under track. Existing tracking-by-detection methods adopt simple heuristics, such as spatial or appearance similarity. Such methods, in spite of their commonality, are overly simple and insufficient to model complex variations, such as tracking through occlusion. Inherently, existing methods lack the ability to learn temporal variations from data. In this paper, we present MOTR, the first fully end-to-end multiple-object tracking framework. It learns to model the long-range temporal variation of the objects. It performs temporal association implicitly and avoids previous explicit heuristics. Built on Transformer and DETR, MOTR introduces the concept of “track query”. Each track query models the entire track of an object. It is transferred and updated frame-by-frame to perform object detection and tracking, in a seamless manner. Temporal aggregation
-network combined with multi-frame training is proposed to model the long-range temporal relation. Experimental results show that MOTR achieves state-of-the-art performance. Code will be released.
+**Abstract.** The key challenge in multiple-object tracking task is temporal modeling of the object under track. Existing tracking-by-detection methods adopt simple heuristics, such as spatial or appearance similarity. Such methods, in spite of their commonality, are overly simple and lack the ability to learn temporal variations from data in an end-to-end manner.In this paper, we present MOTR, a fully end-to-end multiple-object tracking framework. It learns to model the long-range temporal variation of the objects. It performs temporal association implicitly and avoids previous explicit heuristics. Built upon DETR, MOTR introduces the concept of "track query". Each track query models the entire track of an object. It is transferred and updated frame-by-frame to perform iterative predictions in a seamless manner. Tracklet-aware label assignment is proposed for one-to-one assignment between track queries and object tracks. Temporal aggregation network together with collective average loss is further proposed to enhance the long-range temporal relation. Experimental results show that MOTR achieves competitive performance and can serve as a strong Transformer-based baseline for future research.
 
-## License
-
-This project is released under the [Apache 2.0 license](./LICENSE).
-
-
-<!-- ## Citing Deformable DETR
-If you find Deformable DETR useful in your research, please consider citing:
-```bibtex
-@article{zhu2020deformable,
-  title={Deformable DETR: Deformable Transformers for End-to-End Object Detection},
-  author={Zhu, Xizhou and Su, Weijie and Lu, Lewei and Li, Bin and Wang, Xiaogang and Dai, Jifeng},
-  journal={arXiv preprint arXiv:2010.04159},
-  year={2020}
-}
-``` -->
+## Updates
+- (23/09/2021) Report BDD100K results and release corresponding codes. 
 
 ## Main Results
 
-|   Method   |  Dataset  |  MOTA  |  IDF1   |  IDS   |  URL   |  
-|:------:|:------:|:------:|:------:|:------:|:------:|  
-| MOTR | MOT16 | 62.2 | 62.6 | 575 | [model](s3://detr-mot/mot/paper_release/e2e_mot17_ch_val_joint.r50_dcn_deformable_detr.fixed_v2.iter.lr4.frame4.interval10.attn_merger_v3.epoch200.drop100.fp03.filter_iou.update_query_pos.no_dropout.hr.crop/checkpoint0164.pth) |
-| MOTR | MOT17 | 62.5 | 62.2 | 1839 | [model](s3://detr-mot/mot/paper_release/e2e_mot17_ch_val_joint.r50_dcn_deformable_detr.fixed_v2.iter.lr4.frame4.interval10.attn_merger_v3.epoch200.drop100.fp03.filter_iou.update_query_pos.no_dropout.hr.crop/checkpoint0164.pth) |
+### MOT17
+
+|  **Method**  |  **Dataset**  |  **Train Data**  |  **MOTA**  |  **IDF1**  |  **IDS**  |  **URL**  |  
+|:------:|:------:|:------:|:------:|:------:|:------:|:------:|  
+| MOTR | MOT16 | MOT17+CrowdHuman Val | 66.8 | 67.0 | 586 | [model](https://drive.google.com/file/d/1diXBvAuAKPcKxWHlubcvGgh6g8tGlaOZ/view?usp=sharing) |
+| MOTR | MOT17 | MOT17+CrowdHuman Val | 67.4 | 67.0 | 1992 | [model](https://drive.google.com/file/d/1diXBvAuAKPcKxWHlubcvGgh6g8tGlaOZ/view?usp=sharing) |
+
+### BDD100K
+
+|  **Method**  |  **Dataset**  |  **Train Data**  |  **MOTA**  |  **IDF1**  |  **IDS**  |  **URL**  |  
+|:------:|:------:|:------:|:------:|:------:|:------:|:------:|  
+| MOTR | BDD100K |  BDD100K | 32.0 | 43.5 | 3493 | [model](https://drive.google.com/file/d/13fsTj9e6Hk7qVcybWi1X5KbZEsFCHa6e/view?usp=sharing) |
 
 *Note:*
 
-1. All models of MOTR are trained on NVIDIA Tesla V100 GPU.
-2. The original implementation is based on our internal codebase. There are slight differences in the final accuracy and running time due to the plenty details in platform switch.
+1. All models of MOTR are trained on 8 NVIDIA Tesla V100 GPUs.
+2. The training time is about 2.5 days for 200 epochs;
+3. The inference speed is about 7.5 FPS for resolution 1536x800;
+4. All models of MOTR are trained with ResNet50 with pre-trained weights on COCO dataset.
 
 
 ## Installation
+
+The codebase is built on top of [Deformable DETR](https://github.com/fundamentalvision/Deformable-DETR).
 
 ### Requirements
 
@@ -76,19 +77,17 @@ If you find Deformable DETR useful in your research, please consider citing:
     pip install -r requirements.txt
     ```
 
-### Compiling CUDA operators
-```bash
-cd ./models/ops
-sh ./make.sh
-# unit test (should see all checking is True)
-python test.py
-```
+* Build MultiScaleDeformableAttention
+    ```bash
+    cd ./models/ops
+    sh ./make.sh
+    ```
 
 ## Usage
 
 ### Dataset preparation
 
-Please download [MOT17 dataset](https://motchallenge.net/) and [CrowdHuman dataset](https://www.crowdhuman.org/) and organize them as following:
+1. Please download [MOT17 dataset](https://motchallenge.net/) and [CrowdHuman dataset](https://www.crowdhuman.org/) and organize them like [FairMOT](https://github.com/ifzhang/FairMOT) as following:
 
 ```
 .
@@ -103,34 +102,85 @@ Please download [MOT17 dataset](https://motchallenge.net/) and [CrowdHuman datas
 ├── MOT17
 │   ├── images
 │   ├── labels_with_ids
+├── bdd100k
+│   ├── images
+│       ├── track
+│           ├── train
+│           ├── val
+│   ├── labels
+│       ├── track
+│           ├── train
+│           ├── val
 
 ```
 
-### Training
+2. For BDD100K dataset, you can use the following script to generate txt file:
+
+
+```bash 
+cd datasets/data_path
+python3 generate_bdd100k_mot.py
+cd ../../
+```
+
+### Training and Evaluation
 
 #### Training on single node
 
-For example, the command for training MOTR on 8 GPUs is as following:
+You can download COCO pretrained weights from [Deformable DETR](https://github.com/fundamentalvision/Deformable-DETR). Then training MOTR on 8 GPUs as following:
+
+```bash 
+sh configs/r50_motr_train.sh
 
 ```
-bash run.sh
 
-```
-
-### Evaluation on MOT15
+#### Evaluation on MOT15
 
 You can download the pretrained model of MOTR (the link is in "Main Results" session), then run following command to evaluate it on MOT15 train dataset:
 
-```
-bash eval.sh
+```bash 
+sh configs/r50_motr_eval.sh
 
 ```
 
-### Evaluation on MOT17
-
-You can download the pretrained model of MOTR (the link is in "Main Results" session), then run following command to evaluate it on MOT17 test dataset:
+For visual in demo video, you can enable 'vis=True' in eval.py like:
+```bash 
+det.detect(vis=True)
 
 ```
-bash submit.sh
 
+#### Evaluation on MOT17
+
+You can download the pretrained model of MOTR (the link is in "Main Results" session), then run following command to evaluate it on MOT17 test dataset (submit to server):
+
+```bash
+sh configs/r50_motr_submit.sh
+
+```
+#### Evaluation on BDD100K
+
+For BDD100K dataset, we choose 0.6/0.6/0.6 thresh combination.
+
+1. change https://github.com/megvii-model/MOTR/blob/main/models/motr.py#L304 into:
+
+```bash
+score_thresh=0.6, filter_score_thresh=0.6
+```
+
+2. run this commands:
+
+```bash
+sh configs/r50_motr_eval.sh
+```
+
+
+## Citing MOTR
+If you find MOTR useful in your research, please consider citing:
+```bibtex
+@article{zeng2021motr,
+  title={MOTR: End-to-End Multiple-Object Tracking with TRansformer},
+  author={Zeng, Fangao and Dong, Bin and Wang, Tiancai and Zhang, Xiangyu and Wei, Yichen},
+  journal={arXiv preprint arXiv:2105.03247},
+  year={2021}
+}
 ```
