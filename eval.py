@@ -43,7 +43,7 @@ from util.evaluation import Evaluator
 import motmetrics as mm
 import shutil
 
-from detectron2.structures import Instances
+from models.structures import Instances
 
 np.random.seed(2020)
 

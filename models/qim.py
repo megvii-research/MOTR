@@ -46,7 +46,7 @@ class FFN(nn.Module):
     def __init__(self, d_model, d_ffn, dropout=0):
         super().__init__()
         self.linear1 = nn.Linear(d_model, d_ffn)
-        self.activation = F.relu
+        self.activation = nn.ReLU(True)
         self.dropout1 = nn.Dropout(dropout)
         self.linear2 = nn.Linear(d_ffn, d_model)
         self.dropout2 = nn.Dropout(dropout)
@@ -98,7 +98,7 @@ class QueryInteractionModule(QueryInteractionBase):
             self.dropout3 = nn.Dropout(dropout)
             self.dropout4 = nn.Dropout(dropout)
 
-        self.activation = F.relu
+        self.activation = nn.ReLU(True)
 
     def _random_drop_tracks(self, track_instances: Instances) -> Instances:
         return random_drop_tracks(track_instances, self.random_drop)

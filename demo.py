@@ -31,7 +31,7 @@ from main import get_args_parser
 from torch.nn.functional import interpolate
 from typing import List
 import shutil
-from detectron2.structures import Instances
+from models.structures import Instances
 
 np.random.seed(2020)
 

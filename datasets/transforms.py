@@ -34,40 +34,12 @@ def crop_mot(image, target, region):
     # should we do something wrt the original size?
     target["size"] = torch.tensor([h, w])
 
-    fields = ["labels", "area", "iscrowd"]
-    if 'obj_ids' in target:
-        fields.append('obj_ids')
+    fields = ["labels", "area", "iscrowd", "obj_ids"]
 
     if "boxes" in target:
         boxes = target["boxes"]
-        max_size = torch.as_tensor([w, h], dtype=torch.float32)
         cropped_boxes = boxes - torch.as_tensor([j, i, j, i])
-        
-        for i, box in enumerate(cropped_boxes):
-            l, t, r, b = box
-            if l < 0:
-                l = 0
-            if r < 0:
-                r = 0
-            if l > w:
-                l = w
-            if r > w:
-                r = w
-            if t < 0:
-                t = 0
-            if b < 0:
-                b = 0
-            if t > h:
-                t = h
-            if b > h:
-                b = h
-            cropped_boxes[i] = torch.tensor([l, t, r, b], dtype=box.dtype)
-
-        cropped_boxes = torch.min(cropped_boxes.reshape(-1, 2, 2), max_size)
-        cropped_boxes = cropped_boxes.clamp(min=0)
-        area = (cropped_boxes[:, 1, :] - cropped_boxes[:, 0, :]).prod(dim=1)
         target["boxes"] = cropped_boxes.reshape(-1, 4)
-        target["area"] = area
         fields.append("boxes")
 
     if "masks" in target:
@@ -81,6 +53,9 @@ def crop_mot(image, target, region):
         # this is compatible with previous implementation
         if "boxes" in target:
             cropped_boxes = target['boxes'].reshape(-1, 2, 2)
+            max_size = torch.as_tensor([w, h], dtype=torch.float32)
+            cropped_boxes = torch.min(cropped_boxes.reshape(-1, 2, 2), max_size)
+            cropped_boxes = cropped_boxes.clamp(min=0)
             keep = torch.all(cropped_boxes[:, 1, :] > cropped_boxes[:, 0, :], dim=1)
         else:
             keep = target['masks'].flatten(1).any(1)
@@ -103,42 +78,13 @@ def random_shift(image, target, region, sizes):
     # should we do something wrt the original size?
     target["size"] = torch.tensor([h, w])
 
-    fields = ["labels", "area", "iscrowd"]
-    if 'obj_ids' in target:
-        fields.append('obj_ids')
+    fields = ["labels", "area", "iscrowd", "obj_ids"]
 
     if "boxes" in target:
         boxes = target["boxes"]
-        max_size = torch.as_tensor([w, h], dtype=torch.float32)
         cropped_boxes = boxes - torch.as_tensor([j, i, j, i])
-
-        for i, box in enumerate(cropped_boxes):
-            l, t, r, b = box
-            if l < 0:
-                l = 0
-            if r < 0:
-                r = 0
-            if l > w:
-                l = w
-            if r > w:
-                r = w
-            if t < 0:
-                t = 0
-            if b < 0:
-                b = 0
-            if t > h:
-                t = h
-            if b > h:
-                b = h
-            # step 2, re-scale coords secondly
-            ratio_h = 1.0 * oh / h
-            ratio_w = 1.0 * ow / w
-            cropped_boxes[i] = torch.tensor([ratio_w * l, ratio_h * t, ratio_w * r, ratio_h * b], dtype=box.dtype) 
-        
-        cropped_boxes = cropped_boxes.reshape(-1, 2, 2)
-        area = (cropped_boxes[:, 1, :] - cropped_boxes[:, 0, :]).prod(dim=1)
+        cropped_boxes *= torch.as_tensor([ow / w, oh / h, ow / w, oh / h])
         target["boxes"] = cropped_boxes.reshape(-1, 4)
-        target["area"] = area
         fields.append("boxes")
 
     if "masks" in target:
@@ -152,6 +98,9 @@ def random_shift(image, target, region, sizes):
         # this is compatible with previous implementation
         if "boxes" in target:
             cropped_boxes = target['boxes'].reshape(-1, 2, 2)
+            max_size = torch.as_tensor([w, h], dtype=torch.float32)
+            cropped_boxes = torch.min(cropped_boxes.reshape(-1, 2, 2), max_size)
+            cropped_boxes = cropped_boxes.clamp(min=0)
             keep = torch.all(cropped_boxes[:, 1, :] > cropped_boxes[:, 0, :], dim=1)
         else:
             keep = target['masks'].flatten(1).any(1)

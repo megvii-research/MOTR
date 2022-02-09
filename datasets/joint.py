@@ -144,8 +144,6 @@ class DetMOTDetection:
         targets['labels'] = torch.as_tensor(targets['labels'])
         targets['obj_ids'] = torch.as_tensor(targets['obj_ids'])
         targets['boxes'] = torch.as_tensor(targets['boxes'], dtype=torch.float32).reshape(-1, 4)
-        targets['boxes'][:, 0::2].clamp_(min=0, max=w)
-        targets['boxes'][:, 1::2].clamp_(min=0, max=h)
         return img, targets
 
     def _get_sample_range(self, start_idx):

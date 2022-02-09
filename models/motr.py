@@ -19,7 +19,7 @@ import torch.nn.functional as F
 from torch import nn, Tensor
 from typing import List
 
-from util import box_ops
+from util import box_ops, checkpoint
 from util.misc import (NestedTensor, nested_tensor_from_tensor_list,
                        accuracy, get_world_size, interpolate, get_rank,
                        is_dist_avail_and_initialized, inverse_sigmoid)
@@ -367,7 +367,7 @@ def _get_clones(module, N):
 
 class MOTR(nn.Module):
     def __init__(self, backbone, transformer, num_classes, num_queries, num_feature_levels, criterion, track_embed,
-                 aux_loss=True, with_box_refine=False, two_stage=False, memory_bank=None):
+                 aux_loss=True, with_box_refine=False, two_stage=False, memory_bank=None, use_checkpoint=False):
         """ Initializes the model.
         Parameters:
             backbone: torch module of the backbone to be used. See backbone.py
@@ -388,6 +388,7 @@ class MOTR(nn.Module):
         self.class_embed = nn.Linear(hidden_dim, num_classes)
         self.bbox_embed = MLP(hidden_dim, hidden_dim, 4, 3)
         self.num_feature_levels = num_feature_levels
+        self.use_checkpoint = use_checkpoint
         if not two_stage:
             self.query_embed = nn.Embedding(num_queries, hidden_dim * 2)
         if num_feature_levels > 1:
@@ -538,21 +539,24 @@ class MOTR(nn.Module):
         out = {'pred_logits': outputs_class[-1], 'pred_boxes': outputs_coord[-1], 'ref_pts': ref_pts_all[5]}
         if self.aux_loss:
             out['aux_outputs'] = self._set_aux_loss(outputs_class, outputs_coord)
-
+        out['hs'] = hs[-1]
+        return out
+    
+    def _post_process_single_image(self, frame_res, track_instances, is_last):
         with torch.no_grad():
             if self.training:
-                track_scores = outputs_class[-1, 0, :].sigmoid().max(dim=-1).values
+                track_scores = frame_res['pred_logits'][0, :].sigmoid().max(dim=-1).values
             else:
-                track_scores = outputs_class[-1, 0, :, 0].sigmoid()
+                track_scores = frame_res['pred_logits'][0, :, 0].sigmoid()
 
         track_instances.scores = track_scores
-        track_instances.pred_logits = outputs_class[-1, 0]
-        track_instances.pred_boxes = outputs_coord[-1, 0]
-        track_instances.output_embedding = hs[-1, 0]
+        track_instances.pred_logits = frame_res['pred_logits'][0]
+        track_instances.pred_boxes = frame_res['pred_boxes'][0]
+        track_instances.output_embedding = frame_res['hs'][0]
         if self.training:
             # the track id will be assigned by the mather.
-            out['track_instances'] = track_instances
-            track_instances = self.criterion.match_for_single_frame(out)
+            frame_res['track_instances'] = track_instances
+            track_instances = self.criterion.match_for_single_frame(frame_res)
         else:
             # each track will be assigned an unique global id by the track base.
             self.track_base.update(track_instances)
@@ -565,9 +569,12 @@ class MOTR(nn.Module):
         tmp = {}
         tmp['init_track_instances'] = self._generate_empty_tracks()
         tmp['track_instances'] = track_instances
-        out_track_instances = self.track_embed(tmp)
-        out['track_instances'] = out_track_instances
-        return out
+        if not is_last:
+            out_track_instances = self.track_embed(tmp)
+            frame_res['track_instances'] = out_track_instances
+        else:
+            frame_res['track_instances'] = None
+        return frame_res
 
     @torch.no_grad()
     def inference_single_image(self, img, ori_img_size, track_instances=None):
@@ -577,6 +584,7 @@ class MOTR(nn.Module):
             track_instances = self._generate_empty_tracks()
         res = self._forward_single_image(img,
                                          track_instances=track_instances)
+        res = self._post_process_single_image(res, track_instances, False)
 
         track_instances = res['track_instances']
         track_instances = self.post_process(track_instances, ori_img_size)
@@ -599,10 +607,42 @@ class MOTR(nn.Module):
         }
 
         track_instances = self._generate_empty_tracks()
-        for frame in frames:
-            if not isinstance(frame, NestedTensor):
+        keys = list(track_instances._fields.keys())
+        for frame_index, frame in enumerate(frames):
+            frame.requires_grad = False
+            is_last = frame_index == len(frames) - 1
+            if self.use_checkpoint and frame_index < len(frames) - 2:
+                def fn(frame, *args):
+                    frame = nested_tensor_from_tensor_list([frame])
+                    tmp = Instances((1, 1), **dict(zip(keys, args)))
+                    frame_res = self._forward_single_image(frame, tmp)
+                    return (
+                        frame_res['pred_logits'],
+                        frame_res['pred_boxes'],
+                        frame_res['ref_pts'],
+                        frame_res['hs'],
+                        *[aux['pred_logits'] for aux in frame_res['aux_outputs']],
+                        *[aux['pred_boxes'] for aux in frame_res['aux_outputs']]
+                    )
+
+                args = [frame] + [track_instances.get(k) for k in keys]
+                params = tuple((p for p in self.parameters() if p.requires_grad))
+                tmp = checkpoint.CheckpointFunction.apply(fn, len(args), *args, *params)
+                frame_res = {
+                    'pred_logits': tmp[0],
+                    'pred_boxes': tmp[1],
+                    'ref_pts': tmp[2],
+                    'hs': tmp[3],
+                    'aux_outputs': [{
+                        'pred_logits': tmp[4+i],
+                        'pred_boxes': tmp[4+5+i],
+                    } for i in range(5)],
+                }
+            else:
                 frame = nested_tensor_from_tensor_list([frame])
-            frame_res = self._forward_single_image(frame, track_instances)
+                frame_res = self._forward_single_image(frame, track_instances)
+            frame_res = self._post_process_single_image(frame_res, track_instances, is_last)
+
             track_instances = frame_res['track_instances']
             outputs['pred_logits'].append(frame_res['pred_logits'])
             outputs['pred_boxes'].append(frame_res['pred_boxes'])
@@ -672,5 +712,6 @@ def build(args):
         with_box_refine=args.with_box_refine,
         two_stage=args.two_stage,
         memory_bank=memory_bank,
+        use_checkpoint=args.use_checkpoint,
     )
     return model, criterion, postprocessors

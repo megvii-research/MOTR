@@ -22,7 +22,6 @@ from torchvision.models._utils import IntermediateLayerGetter
 from typing import Dict, List
 
 from util.misc import NestedTensor, is_main_process
-from detectron2.layers import NaiveSyncBatchNorm
 from .position_encoding import build_position_encoding
 
 class FrozenBatchNorm2d(torch.nn.Module):

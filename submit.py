@@ -43,7 +43,8 @@ from util.evaluation import Evaluator
 import motmetrics as mm
 import shutil
 
-from detectron2.structures import Instances
+from models.structures import Instances
+from torch.utils.data import Dataset, DataLoader
 
 np.random.seed(2020)
 
@@ -325,8 +326,49 @@ def filter_pub_det(res_file, pub_det_file, filter_iou=False):
                 print("save init track {} {}".format(frame_id, obj_id))
                 ids[obj_id] = True
             f.write(line)
-            
+
     print("totally {} boxes are filtered.".format(num_filter_box))
+
+class ListImgDataset(Dataset):
+    def __init__(self, img_list) -> None:
+        super().__init__()
+        self.img_list = img_list
+
+        '''
+        common settings
+        '''
+        self.img_height = 800
+        self.img_width = 1536
+        self.mean = [0.485, 0.456, 0.406]
+        self.std = [0.229, 0.224, 0.225]
+
+    def load_img_from_file(self, f_path):
+        label_path = f_path.replace('images', 'labels_with_ids').replace('.png', '.txt').replace('.jpg', '.txt')
+        cur_img = cv2.imread(f_path)
+        assert cur_img is not None, f_path
+        cur_img = cv2.cvtColor(cur_img, cv2.COLOR_BGR2RGB)
+        targets = load_label(label_path, cur_img.shape[:2]) if os.path.exists(label_path) else None
+        return cur_img, targets
+
+    def init_img(self, img):
+        ori_img = img.copy()
+        self.seq_h, self.seq_w = img.shape[:2]
+        scale = self.img_height / min(self.seq_h, self.seq_w)
+        if max(self.seq_h, self.seq_w) * scale > self.img_width:
+            scale = self.img_width / max(self.seq_h, self.seq_w)
+        target_h = int(self.seq_h * scale)
+        target_w = int(self.seq_w * scale)
+        img = cv2.resize(img, (target_w, target_h))
+        img = F.normalize(F.to_tensor(img), self.mean, self.std)
+        img = img.unsqueeze(0)
+        return img, ori_img
+
+    def __len__(self):
+        return len(self.img_list)
+    
+    def __getitem__(self, index):
+        img, targets = self.load_img_from_file(self.img_list[index])
+        return self.init_img(img)
 
 
 class Detector(object):
@@ -344,11 +386,6 @@ class Detector(object):
         self.img_len = len(self.img_list)
         self.tr_tracker = MOTR()
 
-        self.img_height = 800
-        self.img_width = 1536
-        self.mean = [0.485, 0.456, 0.406]
-        self.std = [0.229, 0.224, 0.225]
-
         self.save_path = os.path.join(self.args.output_dir, 'results/{}'.format(seq_num))
         os.makedirs(self.save_path, exist_ok=True)
 
@@ -356,26 +393,6 @@ class Detector(object):
         os.makedirs(self.predict_path, exist_ok=True)
         if os.path.exists(os.path.join(self.predict_path, f'{self.seq_num}.txt')):
             os.remove(os.path.join(self.predict_path, f'{self.seq_num}.txt'))
-
-    def load_img_from_file(self, f_path):
-        label_path = f_path.replace('images', 'labels_with_ids').replace('.png', '.txt').replace('.jpg', '.txt')
-        cur_img = cv2.imread(f_path)
-        cur_img = cv2.cvtColor(cur_img, cv2.COLOR_BGR2RGB)
-        targets = load_label(label_path, cur_img.shape[:2]) if os.path.exists(label_path) else None
-        return cur_img, targets
-
-    def init_img(self, img):
-        ori_img = img.copy()
-        self.seq_h, self.seq_w = img.shape[:2]
-        scale = self.img_height / min(self.seq_h, self.seq_w)
-        if max(self.seq_h, self.seq_w) * scale > self.img_width:
-            scale = self.img_width / max(self.seq_h, self.seq_w)
-        target_h = int(self.seq_h * scale)
-        target_w = int(self.seq_w * scale)
-        img = cv2.resize(img, (target_w, target_h))
-        img = F.normalize(F.to_tensor(img), self.mean, self.std)
-        img = img.unsqueeze(0)
-        return img, ori_img
 
     @staticmethod
     def filter_dt_by_score(dt_instances: Instances, prob_threshold: float) -> Instances:
@@ -420,22 +437,23 @@ class Detector(object):
             img_show = draw_bboxes(img_show, gt_boxes, identities=np.ones((len(gt_boxes), )) * -1)
         cv2.imwrite(img_path, img_show)
 
-    def detect(self, prob_threshold=0.75, area_threshold=100):
+    def detect(self, prob_threshold=0.7, area_threshold=100):
         last_dt_embedding = None
         total_dts = 0
         total_occlusion_dts = 0
 
         track_instances = None
-        for i in tqdm(range(0, self.img_len)):
-            img, targets = self.load_img_from_file(self.img_list[i])
-            cur_img, ori_img = self.init_img(img)
+        loader = DataLoader(ListImgDataset(self.img_list), 1, num_workers=2)
+        for i, (cur_img, ori_img) in enumerate(tqdm(loader)):
+            cur_img, ori_img = cur_img[0], ori_img[0]
 
             # track_instances = None
             if track_instances is not None:
                 track_instances.remove('boxes')
                 track_instances.remove('labels')
+            seq_h, seq_w, _ = ori_img.shape
 
-            res = self.detr.inference_single_image(cur_img.cuda().float(), (self.seq_h, self.seq_w), track_instances)
+            res = self.detr.inference_single_image(cur_img.cuda().float(), (seq_h, seq_w), track_instances)
             track_instances = res['track_instances']
 
             all_ref_pts = tensor_to_numpy(res['ref_pts'][0, :, :2])
@@ -449,12 +467,7 @@ class Detector(object):
             dt_instances.scores[dt_instances.labels == 1] *= -1
             total_dts += len(dt_instances)
             total_occlusion_dts += num_occlusion
-            val_dt = dt_instances[dt_instances.labels == 0]
 
-            cur_vis_img_path = os.path.join(self.save_path, 'frame_{}.jpg'.format(i))
-            gt_boxes = None
-            # for visual
-            # self.visualize_img_with_bbox(cur_vis_img_path, ori_img, dt_instances, ref_pts=all_ref_pts, gt_boxes=gt_boxes)
             tracker_outputs = self.tr_tracker.update(dt_instances)
 
             self.write_results(txt_path=os.path.join(self.predict_path, f'{self.seq_num}.txt'),

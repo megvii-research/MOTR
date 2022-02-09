@@ -175,6 +175,8 @@ def get_args_parser():
     parser.add_argument('--memory_bank_len', type=int, default=4)
     parser.add_argument('--memory_bank_type', type=str, default=None)
     parser.add_argument('--memory_bank_with_self_attn', action='store_true', default=False)
+
+    parser.add_argument('--use_checkpoint', action='store_true', default=False)
     return parser
 
 
