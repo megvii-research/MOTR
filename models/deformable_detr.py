@@ -471,6 +471,8 @@ def build(args):
         num_classes = 1
     if args.dataset_file == 'e2e_mot':
         num_classes = 1
+    if args.dataset_file == 'e2e_dance':
+        num_classes = 1
     device = torch.device(args.device)
 
     backbone = build_backbone(args)
