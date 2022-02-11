@@ -659,6 +659,7 @@ def build(args):
         'coco': 91,
         'coco_panoptic': 250,
         'e2e_mot': 1,
+        'e2e_dance': 1,
         'e2e_joint': 1,
         'e2e_static_mot': 1,
     }

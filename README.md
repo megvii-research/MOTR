@@ -23,6 +23,8 @@ This repository is an official implementation of the paper [MOTR: End-to-End Mul
 ## Updates
 - (2021/09/23) Report BDD100K results and release corresponding codes [motr_bdd100k](https://github.com/megvii-model/MOTR/tree/motr_bdd100k). 
 - (2022/02/09) Higher performance achieved by not clipping the bounding boxes inside the image.
+- (2022/02/11) Add checkpoint support for training on RTX 2080ti.
+- (2022/02/11) Report [DanceTrack](https://github.com/DanceTrack/DanceTrack) results and [scripts](configs/r50_motr_train_dance.sh).
 
 ## Main Results
 
@@ -32,6 +34,12 @@ This repository is an official implementation of the paper [MOTR: End-to-End Mul
 | :--------: | :---------: | :------------------: | :------: | :------: | :-----: | :------: | :------: | :------: | :-----------------------------------------------------------------------------------------: |
 |    MOTR    |    MOT17    | MOT17+CrowdHuman Val |   71.1   |   68.4   |  2229   |   56.9   |   55.8   |   58.4   | [model](https://drive.google.com/file/d/1Utd6aqnuuOiMSQGvq4UGsnAfMpjtsW3E/view?usp=sharing) |
 
+### DanceTrack
+
+| **Method** | **Dataset** | **Train Data** | **MOTA** | **IDF1** | **HOTA** | **AssA** | **DetA** |                                           **URL**                                           |
+| :--------: | :---------: | :------------: | :------: | :------: | :------: | :------: | :------: | :-----------------------------------------------------------------------------------------: |
+|    MOTR    | DanceTrack  |   DanceTrack   |   79.7   |   51.5   |   54.2   |   40.2   |   73.5   | [model](https://drive.google.com/file/d/1zs5o1oK8diafVfewRl3heSVQ7-XAty3J/view?usp=sharing) |
+
 ### BDD100K
 
 | **Method** | **Dataset** | **Train Data** | **MOTA** | **IDF1** | **IDS** |                                           **URL**                                           |
@@ -40,8 +48,8 @@ This repository is an official implementation of the paper [MOTR: End-to-End Mul
 
 *Note:*
 
-1. All models of MOTR are trained on 8 NVIDIA Tesla V100 GPUs.
-2. The training time is about 2.5 days for 200 epochs;
+1. MOTR on MOT17 and DanceTrack is trained on 8 NVIDIA RTX 2080ti GPUs.
+2. The training time for MOT17 is about 2.5 days on V100 or 4 days on RTX 2080ti;
 3. The inference speed is about 7.5 FPS for resolution 1536x800;
 4. All models of MOTR are trained with ResNet50 with pre-trained weights on COCO dataset.
 
@@ -102,6 +110,9 @@ The codebase is built on top of [Deformable DETR](https://github.com/fundamental
 ├── MOT17
 │   ├── images
 │   ├── labels_with_ids
+├── DanceTrack
+│   ├── train
+│   ├── test
 ├── bdd100k
 │   ├── images
 │       ├── track

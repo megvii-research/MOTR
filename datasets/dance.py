@@ -253,5 +253,5 @@ def build(image_set, args):
         dataset = DetMOTDetection(args, data_txt_path=data_txt_path, seqs_folder=root, dataset2transform=dataset2transform)
     if image_set == 'val':
         data_txt_path = args.data_txt_path_val
-        dataset = DetMOTDetection(args, data_txt_path=data_txt_path, seqs_folder=root, dataset2transform=dataset2transform, joint=False)
+        dataset = DetMOTDetection(args, data_txt_path=data_txt_path, seqs_folder=root, dataset2transform=dataset2transform)
     return dataset

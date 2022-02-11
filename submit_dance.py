@@ -499,10 +499,6 @@ if __name__ == '__main__':
     sub_dir = 'DanceTrack/test'
     seq_nums = os.listdir(os.path.join(args.mot_path, sub_dir))
 
-    rank = int(os.environ.get('RLAUNCH_REPLICA', '0'))
-    ws = int(os.environ.get('RLAUNCH_REPLICA_TOTAL', '1'))
-    seq_nums = seq_nums[rank::ws]
-
     for seq_num in seq_nums:
         det = Detector(args, model=detr, seq_num=seq_num)
         det.detect()
