@@ -30,15 +30,15 @@ This repository is an official implementation of the paper [MOTR: End-to-End Mul
 
 ### MOT17
 
-| **Method** | **Dataset** |    **Train Data**    | **MOTA** | **IDF1** | **IDS** | **HOTA** | **AssA** | **DetA** |                                           **URL**                                           |
-| :--------: | :---------: | :------------------: | :------: | :------: | :-----: | :------: | :------: | :------: | :-----------------------------------------------------------------------------------------: |
-|    MOTR    |    MOT17    | MOT17+CrowdHuman Val |   71.1   |   68.4   |  2229   |   56.9   |   55.8   |   58.4   | [model](https://drive.google.com/file/d/1Utd6aqnuuOiMSQGvq4UGsnAfMpjtsW3E/view?usp=sharing) |
+| **Method** | **Dataset** |    **Train Data**    | **HOTA** | **DetA** | **AssA** | **MOTA** | **IDF1** | **IDS** |                                           **URL**                                           |
+| :--------: | :---------: | :------------------: | :------: | :------: | :------: | :------: | :------: | :-----: | :-----------------------------------------------------------------------------------------: |
+|    MOTR    |    MOT17    | MOT17+CrowdHuman Val |   57.2   |   58.9   |   55.8   |   71.9   |   68.4   |  2115   | [model](https://drive.google.com/file/d/1K9AbtzTCBNsOD8LYA1k16kf4X0uJi8PC/view?usp=sharing) |
 
 ### DanceTrack
 
-| **Method** | **Dataset** | **Train Data** | **MOTA** | **IDF1** | **HOTA** | **AssA** | **DetA** |                                           **URL**                                           |
+| **Method** | **Dataset** | **Train Data** | **HOTA** | **DetA** | **AssA** | **MOTA** | **IDF1** |                                           **URL**                                           |
 | :--------: | :---------: | :------------: | :------: | :------: | :------: | :------: | :------: | :-----------------------------------------------------------------------------------------: |
-|    MOTR    | DanceTrack  |   DanceTrack   |   79.7   |   51.5   |   54.2   |   40.2   |   73.5   | [model](https://drive.google.com/file/d/1zs5o1oK8diafVfewRl3heSVQ7-XAty3J/view?usp=sharing) |
+|    MOTR    | DanceTrack  |   DanceTrack   |   54.2   |   73.5   |   40.2   |   79.7   |   51.5   | [model](https://drive.google.com/file/d/1zs5o1oK8diafVfewRl3heSVQ7-XAty3J/view?usp=sharing) |
 
 ### BDD100K
 
