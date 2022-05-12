@@ -474,8 +474,8 @@ class Detector(object):
                                frame_id=(i + 1),
                                bbox_xyxy=tracker_outputs[:, :4],
                                identities=tracker_outputs[:, 5])
-        filter_pub_det(os.path.join(self.predict_path, f'{self.seq_num}.txt'),
-                        f'/data/Dataset/mot/MOT17/images/test/{self.seq_num}/det/det.txt')
+        # filter_pub_det(os.path.join(self.predict_path, f'{self.seq_num}.txt'),
+        #                 f'/data/Dataset/mot/MOT17/images/test/{self.seq_num}/det/det.txt')
         print("totally {} dts {} occlusion dts".format(total_dts, total_occlusion_dts))
 
 

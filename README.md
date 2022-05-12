@@ -25,6 +25,7 @@ This repository is an official implementation of the paper [MOTR: End-to-End Mul
 - (2022/02/09) Higher performance achieved by not clipping the bounding boxes inside the image.
 - (2022/02/11) Add checkpoint support for training on RTX 2080ti.
 - (2022/02/11) Report [DanceTrack](https://github.com/DanceTrack/DanceTrack) results and [scripts](configs/r50_motr_train_dance.sh).
+- (2022/05/12) Higher performance achieved by removing the public detection filtering (filter_pub_det) trick.
 
 ## Main Results
 
@@ -32,7 +33,7 @@ This repository is an official implementation of the paper [MOTR: End-to-End Mul
 
 | **Method** | **Dataset** |    **Train Data**    | **HOTA** | **DetA** | **AssA** | **MOTA** | **IDF1** | **IDS** |                                           **URL**                                           |
 | :--------: | :---------: | :------------------: | :------: | :------: | :------: | :------: | :------: | :-----: | :-----------------------------------------------------------------------------------------: |
-|    MOTR    |    MOT17    | MOT17+CrowdHuman Val |   57.2   |   58.9   |   55.8   |   71.9   |   68.4   |  2115   | [model](https://drive.google.com/file/d/1K9AbtzTCBNsOD8LYA1k16kf4X0uJi8PC/view?usp=sharing) |
+|    MOTR    |    MOT17    | MOT17+CrowdHuman Val |   57.8   |   60.3   |   55.7   |   73.4   |   68.6   |  2439   | [model](https://drive.google.com/file/d/1K9AbtzTCBNsOD8LYA1k16kf4X0uJi8PC/view?usp=sharing) |
 
 ### DanceTrack
 
@@ -210,7 +211,7 @@ If you find MOTR useful in your research, please consider citing:
 ```bibtex
 @article{zeng2021motr,
   title={MOTR: End-to-End Multiple-Object Tracking with TRansformer},
-  author={Zeng, Fangao and Dong, Bin and Wang, Tiancai and Zhang, Xiangyu and Wei, Yichen},
+  author={Zeng, Fangao and Dong, Bin and Zhang, Yuang and Wang, Tiancai and Zhang, Xiangyu and Wei, Yichen},
   journal={arXiv preprint arXiv:2105.03247},
   year={2021}
 }
