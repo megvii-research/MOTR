@@ -26,6 +26,7 @@ This repository is an official implementation of the paper [MOTR: End-to-End Mul
 - (2022/02/11) Add checkpoint support for training on RTX 2080ti.
 - (2022/02/11) Report [DanceTrack](https://github.com/DanceTrack/DanceTrack) results and [scripts](configs/r50_motr_train_dance.sh).
 - (2022/05/12) Higher performance achieved by removing the public detection filtering (filter_pub_det) trick.
+- (2022/07/04) MOTR is accepted by ECCV 2022.
 
 ## Main Results
 
@@ -209,10 +210,10 @@ python3 demo.py \
 ## Citing MOTR
 If you find MOTR useful in your research, please consider citing:
 ```bibtex
-@article{zeng2021motr,
+@inproceedings{zeng2021motr,
   title={MOTR: End-to-End Multiple-Object Tracking with TRansformer},
   author={Zeng, Fangao and Dong, Bin and Zhang, Yuang and Wang, Tiancai and Zhang, Xiangyu and Wei, Yichen},
-  journal={arXiv preprint arXiv:2105.03247},
-  year={2021}
+  booktitle={European Conference on Computer Vision (ECCV)},
+  year={2022}
 }
 ```
