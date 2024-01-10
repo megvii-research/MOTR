@@ -26,6 +26,7 @@ import datasets.transforms as T
 from models.structures import Instances
 
 from random import choice, randint
+import xml.etree.ElementTree as ET
 
 
 class DetMOTDetection:
@@ -36,25 +37,38 @@ class DetMOTDetection:
         self.sample_mode = args.sample_mode
         self.sample_interval = args.sample_interval
         self.video_dict = {}
-        self.split_dir = os.path.join(args.mot_path, "DanceTrack", "train")
+        self.split_dir = os.path.join(args.mot_path, "train", "1")
 
         self.labels_full = defaultdict(lambda : defaultdict(list))
         for vid in os.listdir(self.split_dir):
             if 'DPM' in vid or 'FRCNN' in vid:
                 print(f'filter {vid}')
                 continue
-            gt_path = os.path.join(self.split_dir, vid, 'gt', 'gt.txt')
-            for l in open(gt_path):
-                t, i, *xywh, mark, label = l.strip().split(',')[:8]
-                t, i, mark, label = map(int, (t, i, mark, label))
-                if mark == 0:
-                    continue
-                if label in [3, 4, 5, 6, 9, 10, 11]:  # Non-person
-                    continue
-                else:
-                    crowd = False
-                x, y, w, h = map(float, (xywh))
-                self.labels_full[vid][t].append([x, y, w, h, i, crowd])
+
+            # 读取XML文件
+            gt_path = os.path.join(args.mot_path, "new_xml", '1', vid+'.xml')
+            tree = ET.parse(gt_path)
+            root = tree.getroot()
+
+            # 遍历每个<box>元素
+            for track in root.findall('.//track'):
+                track_id = int(track.get('id'))
+                label = track.get('label')
+                
+                # 遍历每个<box>元素
+                for box in track.findall('.//box'):
+                    frame = int(box.get('frame'))
+                    occluded = int(box.get('occluded'))
+                    outside = int(box.get('outside'))
+                    xbr = float(box.get('xbr'))
+                    xtl = float(box.get('xtl'))
+                    ybr = float(box.get('ybr'))
+                    ytl = float(box.get('ytl'))
+                    x = xtl
+                    y = ytl
+                    w = xbr - xtl
+                    h = ybr - ytl
+                    self.labels_full[vid][frame].append([x, y, w, h, track_id, False])
         vid_files = list(self.labels_full.keys())
 
         self.indices = []
@@ -120,7 +134,7 @@ class DetMOTDetection:
         return [img], [target]
 
     def _pre_single_frame(self, vid, idx: int):
-        img_path = os.path.join(self.split_dir, vid, 'img1', f'{idx:08d}.jpg')
+        img_path = os.path.join(self.split_dir, vid, f'{idx:08d}.jpg')
         img = Image.open(img_path)
         targets = {}
         w, h = img._size
